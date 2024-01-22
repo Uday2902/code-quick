@@ -2,7 +2,9 @@
   "name": "code-quick",
   "displayName": "Code Quick",
   "description": "Generate code straight to your space!",
-  "version": "0.0.1",
+  "publisher": "uday2902",
+  "icon": "assets/logo-black.png",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -12,10 +14,12 @@
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "code-quick.start",
-      "title": "Code Quick"
-    }]
+    "commands": [
+      {
+        "command": "code-quick.start",
+        "title": "Code Quick"
+      }
+    ]
   },
   "scripts": {
     "lint": "eslint .",
@@ -23,12 +27,12 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
+    "@types/vscode": "^1.85.0",
     "@vscode/test-cli": "^0.0.4",
-    "@vscode/test-electron": "^2.3.8"
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
   }
 }
