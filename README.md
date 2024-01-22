@@ -20,9 +20,6 @@
 `3.` Enter prompts related to the code you want to generate, following the instructions provided.  
 `4.` The extension will automatically insert the generated code into your active file.  
 
-    
-[![Video Demo]('./Code Quick - Tutorial.mp4')]
+![Code Quick Tutorial](./Code%20Quick%20Tutorial.gif)
 
-
-### Configuration
-Feel free to contribute to this project by reporting issues, suggesting enhancements, or submitting pull requests. Your feedback and contributions are highly appreciated.
+[![Code Quick Tutorial](https://i9.ytimg.com/vi_webp/jVRPsul5Cyw/mqdefault.webp?v=65ae9940&sqp=CLSyuq0G&rs=AOn4CLBbuseDsiilEUuI18arAhsNIMNp6Q)](https://www.youtube.com/watch?v=jVRPsul5Cyw)
