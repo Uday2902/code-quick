@@ -17,7 +17,33 @@
     "commands": [
       {
         "command": "code-quick.start",
-        "title": "Code Quick"
+        "title": "Transform Entire File"
+      },
+      {
+        "command": "code-quick.startt",
+        "title": "Insert at Cursor"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "code-quick.mainMenu",
+          "group": "menus"
+        }
+      ],
+      "code-quick.mainMenu": [
+        {
+          "command": "code-quick.start"
+        },
+        {
+          "command": "code-quick.startt"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "code-quick.mainMenu",
+        "label": "Code Quick"
       }
     ]
   },
