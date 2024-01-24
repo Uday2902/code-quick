@@ -1,9 +1,5 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+const MY_OPENAI_API_KEY = "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";
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -12,19 +8,53 @@ const vscode = require('vscode');
 
 function activate(context) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "code-quick" is now active!');
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let TransformEntireFile = vscode.commands.registerCommand('code-quick.TransformEntireFile', async function () {
-		// The code you place here will be executed every time your command is executed
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Code Quick!');
+	let configuration = vscode.workspace.getConfiguration('code-quick');
+	let apiKey = configuration.get('apiKey');
+
+	if (apiKey === "") {
+		vscode.commands.executeCommand('code-quick.ShowInformationMessageToAddAPIKey');
+	}
+
+	let AskUserForAPIKey = vscode.commands.registerCommand('code-quick.AskUserForAPIKey', async function () {
+		let configuration = vscode.workspace.getConfiguration('code-quick');
+		let userAPIKey = vscode.window.showInputBox({
+			prompt: "Enter your API key"
+		});
+		if (userAPIKey) {
+			configuration.update('apiKey', ((await userAPIKey).toString()).trim(), vscode.ConfigurationTarget.Global);
+		} else {
+			configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global)
+		}
+	});
+
+	const ShowInformationMessageToAddAPIKey = vscode.commands.registerCommand('code-quick.ShowInformationMessageToAddAPIKey', async function () {
+		let timeout = 15000;
+		Promise.race([
+			vscode.window.showInformationMessage('Code Quick prefers to use your own OpenAI API key. The default API key will include requests limits.', 'Add your API key', 'Continue with default API key'),
+			new Promise(resolve => setTimeout(() => resolve('Timeout'), timeout))
+		]).then(selection => {
+			if (selection === "Add your API key") {
+				vscode.commands.executeCommand('code-quick.AskUserForAPIKey');
+			} else if (selection === 'Timeout') {
+				let configuration = vscode.workspace.getConfiguration('code-quick');
+				configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global);
+			} else {
+				let configuration = vscode.workspace.getConfiguration('code-quick');
+				configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global);
+			}
+		});
+	});
+
+
+
+
+	let TransformEntireFile = vscode.commands.registerCommand('code-quick.TransformEntireFile', async function () {
+		vscode.window.showInformationMessage('Transform Entire File!');
 		const userCode = await vscode.window.activeTextEditor.document.getText();
 		const userInput = await vscode.window.showInputBox();
+		console.log()
 		if (userInput.trim() === "") {
 			return;
 		}
@@ -60,10 +90,13 @@ function activate(context) {
 				]
 			}
 
+			const configuration = vscode.workspace.getConfiguration('code-quick');
+			const apiKey = configuration.get('apiKey');
+
 			await fetch("https://api.openai.com/v1/chat/completions", {
 				method: "POST",
 				headers: {
-					"Authorization": `Bearer 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`,
+					"Authorization": `Bearer ${apiKey}`,
 					"Content-Type": "application/json"
 				},
 				body: JSON.stringify(apiRequestBody)
@@ -72,7 +105,7 @@ function activate(context) {
 			}).then(async (data) => {
 				const response = data.choices[0].message.content;
 				const codeToWrite = await extractCodeFromResponse(response)
-				// console.log("Code to Write -> ", codeToWrite)
+				console.log("Code to Write -> ", codeToWrite)
 				let editor = vscode.window.activeTextEditor;
 				if (editor) {
 					// let position = editor.selection.active;
@@ -99,12 +132,12 @@ function activate(context) {
 			token.onCancellationRequested(() => {
 				console.log("User canceled the code generation process.");
 			});
-		
+
 			const startTime = Date.now();
 			await getResponseFromGPT(userInput, userCode);
 			const endTime = Date.now();
 			const elapsedTime = endTime - startTime;
-		
+
 			// If the operation completed before the minimum expected duration, simulate more progress
 			if (elapsedTime < 5000) {
 				const remainingTime = 5000 - elapsedTime;
@@ -112,11 +145,13 @@ function activate(context) {
 					progress.report({ increment: 100, message: "Operation completed!" });
 				}, remainingTime);
 			}
-		
+
 		});
 	});
 
 	context.subscriptions.push(TransformEntireFile);
+	context.subscriptions.push(AskUserForAPIKey);
+	context.subscriptions.push(ShowInformationMessageToAddAPIKey);
 }
 
 // This method is called when your extension is deactivated

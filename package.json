@@ -11,9 +11,20 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./extension.js",
   "contributes": {
+    "configuration": {
+      "properties": {
+        "code-quick.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API Key for Code Quick Extension"
+        }
+      }
+    },
     "commands": [
       {
         "command": "code-quick.TransformEntireFile",
@@ -22,6 +33,10 @@
       {
         "command": "code-quick.InsertAtCursor",
         "title": "Insert at Cursor"
+      },
+      {
+        "command": "code-quick.AskUserForAPIKey",
+        "title": "Add your API Key"
       }
     ],
     "menus": {
@@ -37,6 +52,9 @@
         },
         {
           "command": "code-quick.InsertAtCursor"
+        },
+        {
+          "command": "code-quick.AskUserForAPIKey"
         }
       ]
     },
