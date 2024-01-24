@@ -93,11 +93,11 @@ function activate(context) {
 
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Generating Code...",
+			title: "Your code is on the way...",
 			cancellable: true
 		}, async (progress, token) => {
 			token.onCancellationRequested(() => {
-				console.log("User canceled the long-running operation");
+				console.log("User canceled the code generation process.");
 			});
 		
 			const startTime = Date.now();
