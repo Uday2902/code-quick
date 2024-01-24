@@ -90,7 +90,30 @@ function activate(context) {
 				}
 			})
 		}
-		getResponseFromGPT(userInput, userCode)
+
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Generating Code...",
+			cancellable: true
+		}, async (progress, token) => {
+			token.onCancellationRequested(() => {
+				console.log("User canceled the long-running operation");
+			});
+		
+			const startTime = Date.now();
+			await getResponseFromGPT(userInput, userCode);
+			const endTime = Date.now();
+			const elapsedTime = endTime - startTime;
+		
+			// If the operation completed before the minimum expected duration, simulate more progress
+			if (elapsedTime < 5000) {
+				const remainingTime = 5000 - elapsedTime;
+				setTimeout(() => {
+					progress.report({ increment: 100, message: "Operation completed!" });
+				}, remainingTime);
+			}
+		
+		});
 	});
 
 	context.subscriptions.push(TransformEntireFile);
