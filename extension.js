@@ -18,29 +18,45 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('code-quick.start', async function () {
+	let TransformEntireFile = vscode.commands.registerCommand('code-quick.TransformEntireFile', async function () {
 		// The code you place here will be executed every time your command is executed
 
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from Code Quick!');
 		const userCode = await vscode.window.activeTextEditor.document.getText();
 		const userInput = await vscode.window.showInputBox();
-
+		if (userInput.trim() === "") {
+			return;
+		}
 		const getResponseFromGPT = async (userInput, userCode) => {
 
-			let apiMessages = [{ role: "user", content: `My code: "${userCode}".\n My prompt: "${userInput}"` }];
+			const extractCodeFromResponse = (response) => {
+				const codePattern = /```(?:[^\n]+)?\n([\s\S]+?)\n```/g;
+				let match;
+				let finalCode = "";
+				while ((match = codePattern.exec(response)) !== null) {
+					const extractedCode = match[1];
+					finalCode += extractedCode;
+				}
+				// console.log("Final code -> ", finalCode)
+				return finalCode;
+			}
+
+			let apiMessages = {
+				role: "user",
+				content: `My code: "${userCode}".\n My prompt: "${userInput}"`
+			};
 
 			const systemMessage = {
 				role: "system",
-				// content: "The user has requested code. Please generate the necessary code based on the provided context. If the user has provided any existing code, analyze it and generate the updated code accordingly. Do not write the code from scratch if existing code is provided. If no code is provided by the user, then write the code from scratch. Ensure that the response contains only the code, without any additional text or dummy data. The response should strictly adhere to the user's request and context."
-				content: "The user has requested code. Please generate the necessary code based on the provided context. If the user has provided any existing code, analyze it and generate the updated code accordingly and do not make unnecessary changes. Do not write the code from scratch if existing code is provided. Ensure that the response contains only the code, without any additional text or dummy data not even single line of extra text should be there in response. If user has queried for anything else which is not related to generation of code then you have to give back user's whole code as it is along with added one line of comment which indicated user not requested for code generation."
+				content: "The user has requested code. Please generate the necessary code based on the provided context. If the user has provided any existing code, analyze it and generate code accordingly. Ensure that the response contains only the code, without any additional text or dummy data not even single line of extra text should be there in response."
 			}
 
 			const apiRequestBody = {
 				"model": "gpt-3.5-turbo",
 				"messages": [
 					systemMessage,
-					...apiMessages
+					apiMessages
 				]
 			}
 
@@ -53,8 +69,10 @@ function activate(context) {
 				body: JSON.stringify(apiRequestBody)
 			}).then((response) => {
 				return response.json();
-			}).then((data) => {
-				const codeToWrite = data.choices[0].message.content
+			}).then(async (data) => {
+				const response = data.choices[0].message.content;
+				const codeToWrite = await extractCodeFromResponse(response)
+				// console.log("Code to Write -> ", codeToWrite)
 				let editor = vscode.window.activeTextEditor;
 				if (editor) {
 					// let position = editor.selection.active;
@@ -66,26 +84,16 @@ function activate(context) {
 						document.positionAt(0),
 						document.positionAt(document.getText().length)
 					);
-
-					// Define the new content
-					let newContent = codeToWrite;
-
 					editor.edit(editBuilder => {
-						editBuilder.replace(fullRange, newContent);
+						editBuilder.replace(fullRange, codeToWrite);
 					});
 				}
-
-			}
-			)
+			})
 		}
-
-
 		getResponseFromGPT(userInput, userCode)
-
-
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(TransformEntireFile);
 }
 
 // This method is called when your extension is deactivated

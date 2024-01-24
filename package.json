@@ -16,11 +16,11 @@
   "contributes": {
     "commands": [
       {
-        "command": "code-quick.start",
+        "command": "code-quick.TransformEntireFile",
         "title": "Transform Entire File"
       },
       {
-        "command": "code-quick.startt",
+        "command": "code-quick.InsertAtCursor",
         "title": "Insert at Cursor"
       }
     ],
@@ -33,10 +33,10 @@
       ],
       "code-quick.mainMenu": [
         {
-          "command": "code-quick.start"
+          "command": "code-quick.TransformEntireFile"
         },
         {
-          "command": "code-quick.startt"
+          "command": "code-quick.InsertAtCursor"
         }
       ]
     },
