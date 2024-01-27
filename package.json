@@ -37,24 +37,46 @@
       {
         "command": "code-quick.AskUserForAPIKey",
         "title": "Add your API Key"
+      },
+      {
+        "command": "code-quick.FixSelectedCode",
+        "title": "Selected code"
+      },
+      {
+        "command": "code-quick.FixEntireCode",
+        "title": "Entire code"
       }
     ],
     "menus": {
       "editor/context": [
         {
           "submenu": "code-quick.mainMenu",
-          "group": "menus"
+          "group": "navigation"
         }
       ],
       "code-quick.mainMenu": [
         {
-          "command": "code-quick.TransformEntireFile"
-        },
-        {
           "command": "code-quick.InsertAtCursor"
         },
         {
+          "command": "code-quick.TransformEntireFile"
+        },
+        {
           "command": "code-quick.AskUserForAPIKey"
+        },
+        {
+          "submenu": "code-quick.fixMenu",
+          "group": "navigation"
+        }
+      ],
+      "code-quick.fixMenu": [
+        {
+          "command": "code-quick.FixSelectedCode",
+          "group": "fixMenu"
+        },
+        {
+          "command": "code-quick.FixEntireCode",
+          "group": "fixMenu"
         }
       ]
     },
@@ -62,6 +84,10 @@
       {
         "id": "code-quick.mainMenu",
         "label": "Code Quick"
+      },
+      {
+        "id": "code-quick.fixMenu",
+        "label": "Fix Errors"
       }
     ]
   },
