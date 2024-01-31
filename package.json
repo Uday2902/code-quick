@@ -28,17 +28,17 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "your-extension-id",
-          "title": "Your Extension Title",
+          "id": "code-quick",
+          "title": "Code Quick",
           "icon": "./assets/code-quick-activitybar.svg"
         }
       ]
     },
     "views": {
-      "your-extension-id": [
+      "code-quick": [
         {
-          "id": "view-id",
-          "name": "View Name"
+          "id": "codequick",
+          "name": "Code Quick"
         }
       ]
     },
