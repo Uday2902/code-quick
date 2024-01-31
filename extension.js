@@ -276,18 +276,18 @@ function activate(context) {
 			const selectedText = editor.document.getText(selectionRange);
 			console.log(selectedText)
 
-			// const extractCodeFromResponse = (response) => {
+			const extractCodeFromResponse = (response) => {
 
-			// 	const codePattern = /```(?:[^\n]+)?\n([\s\S]+?)\n```/g;
-			// 	let match;
-			// 	let finalCode = "";
-			// 	while ((match = codePattern.exec(response)) !== null) {
-			// 		const extractedCode = match[1];
-			// 		finalCode += extractedCode;
-			// 	}
+				const codePattern = /```(?:[^\n]+)?\n([\s\S]+?)\n```/g;
+				let match;
+				let finalCode = "";
+				while ((match = codePattern.exec(response)) !== null) {
+					const extractedCode = match[1];
+					finalCode += extractedCode;
+				}
 
-			// 	return finalCode;
-			// }
+				return finalCode;
+			}
 
 			let apiMessages = {
 				role: "user",
@@ -319,8 +319,14 @@ function activate(context) {
 			}).then(async (data) => {
 				const response = data.choices[0].message.content;
 				console.log("response", response);
-				// const codeToWrite = await extractCodeFromResponse(response)
-				const codeToWrite = response;
+				let codeToWrite = "";
+				if(response.includes("```")){
+					codeToWrite = await extractCodeFromResponse(response)
+				}else{
+					codeToWrite = response;
+				}
+				
+				
 				// console.log("Code to write", codeToWrite);
 				editor.edit((editBuilder) => {
 					editBuilder.replace(selection,codeToWrite);
