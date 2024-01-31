@@ -9,13 +9,39 @@
     "vscode": "^1.85.0"
   },
   "categories": [
+    "Snippets",
+    "Testing",
+    "Programming Languages",
+    "Machine Learning",
     "Other"
+  ],
+  "keywords": [
+    "ai",
+    "codequick",
+    "codemaker"
   ],
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "./extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "your-extension-id",
+          "title": "Your Extension Title",
+          "icon": "./assets/code-quick-activitybar.svg"
+        }
+      ]
+    },
+    "views": {
+      "your-extension-id": [
+        {
+          "id": "view-id",
+          "name": "View Name"
+        }
+      ]
+    },
     "configuration": {
       "properties": {
         "code-quick.apiKey": {
