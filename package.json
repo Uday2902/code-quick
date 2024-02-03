@@ -38,7 +38,8 @@
       "code-quick": [
         {
           "id": "codequick",
-          "name": "Code Quick"
+          "name": "Code Quick",
+          "type": "webview"
         }
       ]
     },
@@ -130,5 +131,9 @@
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
   }
 }

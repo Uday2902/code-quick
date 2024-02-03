@@ -5,8 +5,9 @@
 
 ### Features
 - **Prompt-Based Code Generation**: Users can enter prompts related to the code they want to generate.
-- **Interface**: No inerface! Just run single command!.
-- **Automatic Code Generation**: It uses ChatGPT(3.5 turbo) API to generate code.
+- **Code Generation**: It uses ChatGPT(3.5 turbo) API to generate code.
+- **Fix Errors**: It has two options `Fix Errors in Selected Code` and `Fix Errors in Entire Code`.
+- **Add Your Own Api Key**: You can add your own ChatGPT-3.5 API(Free) and ChatGPT-4 API
 
 ### Installation
 `1.` Open Visual Studio Code.  
@@ -15,7 +16,8 @@
 `4.` Install the extension.
 
 ### How to use ?
-`1.` Open a file where you want to generate code.  
+`1.` Open your code file.  
+`2.` Right Click
 `2.` Use the command palette `(Ctrl+Shift+P or Cmd+Shift+P on macOS)` and search for **Code Quick**.  
 `3.` Enter prompts related to the code you want to generate, following the instructions provided.  
 `4.` The extension will automatically insert the generated code into your active file.  

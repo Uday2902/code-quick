@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>ChatGPT Clone in JavaScript | CodingNepal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts Link For Icons -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        /* Import Google font - Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        :root {
+            --text-color: #FFFFFF;
+            --icon-color: #ACACBE;
+            --icon-hover-bg: #5b5e71;
+            --placeholder-color: #dcdcdc;
+            --outgoing-chat-bg: #343541;
+            --incoming-chat-bg: #444654;
+            --outgoing-chat-border: #343541;
+            --incoming-chat-border: #444654;
+        }
+
+        .light-mode {
+            --text-color: #343541;
+            --icon-color: #a9a9bc;
+            --icon-hover-bg: #f1f1f3;
+            --placeholder-color: #6c6c6c;
+            --outgoing-chat-bg: #FFFFFF;
+            --incoming-chat-bg: #F7F7F8;
+            --outgoing-chat-border: #FFFFFF;
+            --incoming-chat-border: #D9D9E3;
+        }
+
+        body {
+            background: var(--outgoing-chat-bg);
+        }
+
+        /* Chats container styling */
+        .chat-container {
+            overflow-y: auto;
+            max-height: 100vh;
+            padding-bottom: 150px;
+        }
+
+        :where(.chat-container, textarea)::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        :where(.chat-container, textarea)::-webkit-scrollbar-track {
+            background: var(--incoming-chat-bg);
+            border-radius: 25px;
+        }
+
+        :where(.chat-container, textarea)::-webkit-scrollbar-thumb {
+            background: var(--icon-color);
+            border-radius: 25px;
+        }
+
+        .default-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 70vh;
+            padding: 0 10px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .default-text h1 {
+            font-size: 3.3rem;
+        }
+
+        .default-text p {
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .chat-container .chat {
+            padding: 25px 10px;
+            display: flex;
+            justify-content: center;
+            color: var(--text-color);
+        }
+
+        .chat-container .chat.outgoing {
+            background: var(--outgoing-chat-bg);
+            border: 1px solid var(--outgoing-chat-border);
+        }
+
+        .chat-container .chat.incoming {
+            background: var(--incoming-chat-bg);
+            border: 1px solid var(--incoming-chat-border);
+        }
+
+        .chat .chat-content {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        span.material-symbols-rounded {
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .chat .chat-content span {
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--icon-color);
+            visibility: hidden;
+        }
+
+        .chat:hover .chat-content:not(:has(.typing-animation), :has(.error)) span {
+            visibility: visible;
+        }
+
+        .chat .chat-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat .chat-details img {
+            width: 35px;
+            height: 35px;
+            align-self: flex-start;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .chat .chat-details p {
+            white-space: pre-wrap;
+            font-size: 1.05rem;
+            padding: 0 50px 0 25px;
+            color: var(--text-color);
+            word-break: break-word;
+        }
+
+        .chat .chat-details p.error {
+            color: #e55865;
+        }
+
+        .chat .typing-animation {
+            padding-left: 25px;
+            display: inline-flex;
+        }
+
+        .typing-animation .typing-dot {
+            height: 7px;
+            width: 7px;
+            border-radius: 50%;
+            margin: 0 3px;
+            opacity: 0.7;
+            background: var(--text-color);
+            animation: animateDots 1.5s var(--delay) ease-in-out infinite;
+        }
+
+        .typing-animation .typing-dot:first-child {
+            margin-left: 0;
+        }
+
+        @keyframes animateDots {
+
+            0%,
+            44% {
+                transform: translateY(0px);
+            }
+
+            28% {
+                opacity: 0.4;
+                transform: translateY(-6px);
+            }
+
+            44% {
+                opacity: 0.2;
+            }
+        }
+
+        /* Typing container styling */
+        .typing-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            padding: 20px 10px;
+            justify-content: center;
+            background: var(--outgoing-chat-bg);
+            border-top: 1px solid var(--incoming-chat-border);
+        }
+
+        .typing-container .typing-content {
+            display: flex;
+            max-width: 950px;
+            width: 100%;
+            align-items: flex-end;
+        }
+
+        .typing-container .typing-textarea {
+            width: 100%;
+            display: flex;
+            position: relative;
+        }
+
+        .typing-textarea textarea {
+            resize: none;
+            height: 55px;
+            width: 100%;
+            border: none;
+            padding: 15px 45px 15px 20px;
+            color: var(--text-color);
+            font-size: 1rem;
+            border-radius: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: var(--incoming-chat-bg);
+            outline: 1px solid var(--incoming-chat-border);
+        }
+
+        .typing-textarea textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        .typing-content span {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            border-radius: 4px;
+            font-size: 1.35rem;
+            align-items: center;
+            justify-content: center;
+            color: var(--icon-color);
+        }
+
+        .typing-textarea span {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            visibility: hidden;
+        }
+
+        .typing-textarea textarea:valid~span {
+            visibility: visible;
+        }
+
+        .typing-controls {
+            display: flex;
+        }
+
+        .typing-controls span {
+            margin-left: 7px;
+            font-size: 1.4rem;
+            background: var(--incoming-chat-bg);
+            outline: 1px solid var(--incoming-chat-border);
+        }
+
+        .typing-controls span:hover {
+            background: var(--icon-hover-bg);
+        }
+
+        #code-snippet {
+            background-color: black;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Reponsive Media Query */
+        @media screen and (max-width: 100px) {
+
+            *{
+                margin: 10px;
+            }
+
+            .default-text h1 {
+                font-size: 2.3rem;
+            }
+
+            :where(.default-text p, textarea, .chat p) {
+                font-size: 0.95rem !important;
+            }
+
+            #code-snippet {
+                background-color: black;
+                border-radius: 5px;
+                padding: 10px;
+                font-family: monospace;
+                color: white;
+                font-weight: 700;
+            }
+
+            .chat-container .chat {
+                padding: 20px 10px;
+            }
+
+            .chat-container .chat img {
+                height: 32px;
+                width: 32px;
+            }
+
+            .img {
+                border-radius: 50%;
+            }
+
+            .chat-container .chat p {
+                padding: 0 20px;
+            }
+
+            .chat .chat-content:not(:has(.typing-animation), :has(.error)) span {
+                visibility: visible;
+            }
+
+            .typing-container {
+                padding: 15px 10px;
+                width: 100%;
+                margin: 10px;
+            }
+
+            .typing-textarea textarea {
+                height: 45px;
+                padding: 10px 10px 10px 10px;
+            }
+
+            .typing-content span {
+                height: 45px;
+                width: 45px;
+                margin-left: 5px;
+            }
+
+            span.material-symbols-rounded {
+                font-size: 1.25rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Chats container -->
+    <div class="chat-container"></div>
+
+    <!-- Typing container -->
+    <div class="typing-container">
+        <div class="typing-content">
+            <div class="typing-textarea">
+                <textarea id="chat-input" spellcheck="false" placeholder="Enter a prompt here" required></textarea>
+                <span id="send-btn" class="material-symbols-rounded">send</span>
+            </div>
+            <div class="typing-controls">
+                <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
+                <span id="delete-btn" class="material-symbols-rounded">delete</span>
+            </div>
+        </div>
+        <script>
+            const chatInput = document.querySelector("#chat-input");
+            const sendButton = document.querySelector("#send-btn");
+            const chatContainer = document.querySelector(".chat-container");
+            const themeButton = document.querySelector("#theme-btn");
+            const deleteButton = document.querySelector("#delete-btn");
+
+            let userText = null;
+            let chatHistory = [];
+
+            const createChatElement = (content, className) => {
+                const chatDiv = document.createElement("div");
+                chatDiv.classList.add("chat", className);
+                chatDiv.innerHTML = content;
+                return chatDiv;
+            }
+
+            const getChatResponse = async (incomingChatDiv) => {
+                const API_URL = "https://api.openai.com/v1/chat/completions";
+
+                const systemMessage = {
+                    role: "system",
+                    content: "If user seek for code then provide code only give least explanation and other text just give code."
+                }
+
+                let apiMessages = chatHistory.map((messageObject) => {
+                    let role = (messageObject.sender === "ChatGPT") ? "assistant" : "user";
+                    return {
+                        role: role,
+                        content: messageObject.message
+                    };
+                });
+
+                const userMessage = {
+                    role: "user",
+                    content: userText
+                };
+
+                apiMessages.push(userMessage);
+
+                const apiRequestBody = {
+                    "model": "gpt-3.5-turbo",
+                    "messages": [
+                        systemMessage,
+                        ...apiMessages
+                    ]
+                }
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer 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",
+                    },
+                    body: JSON.stringify(apiRequestBody),
+                };
+
+                try {
+                    const response = await fetch(API_URL, requestOptions);
+                    const data = await response.json();
+
+                    const responseData = data.choices[0].message.content;
+                    let codeRegex = /`{3}([\s\S]*?)`{3}/g;
+                    let codeBlocks = responseData.match(codeRegex);
+                    let newResponseData = responseData.replace(codeRegex, (match, p1) => `<div id="code-snippet"><p>${p1}</p><span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span></div>`);
+
+
+                    const html = `<div class="chat-content">
+            <div class="chat-details">
+                <img src="https://i.ibb.co/8sP8sKn/code-quick-chat-icon.png" alt="code-quick-chat-icon" style="border-radius: 50%">
+                <div class="typing-animation">
+                    <div class="typing-dot" style="--delay: 0.2s"></div>
+                    <div class="typing-dot" style="--delay: 0.3s"></div>
+                    <div class="typing-dot" style="--delay: 0.4s"></div>
+                </div>
+            </div>
+            <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
+        </div>`;
+                    const incomingChatDiv = createChatElement(html, "incoming");
+                    chatContainer.appendChild(incomingChatDiv);
+                    chatContainer.scrollTo(0, chatContainer.scrollHeight);
+
+                    const pElement = document.createElement("p");
+                    pElement.innerHTML = newResponseData;
+                    var elements = document.getElementsByClassName('typing-animation'); 
+
+                    while (elements.length > 0) {
+                        elements[0].parentNode.removeChild(elements[0]);
+                    }
+                    
+                    console.log(document.querySelector(".typing-animation"))
+
+                    var elements = incomingChatDiv.getElementsByClassName('chat incoming'); 
+
+                    while (elements.length > 0) {
+                        elements[0].parentNode.removeChild(elements[0]);
+                    }
+
+                    document.getElementsByClassName('chat-content-temp')[0].parentElement.remove()
+                    incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
+                    chatContainer.scrollTo(0, chatContainer.scrollHeight);
+
+                    // Update chat history with the response
+                    chatHistory.push({
+                        sender: "ChatGPT",
+                        message: responseData
+                    });
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            };
+
+            const copyResponse = (copyBtn) => {
+                const responseTextElement = copyBtn.parentElement.querySelector("p");
+                navigator.clipboard.writeText(responseTextElement.textContent);
+                copyBtn.textContent = "done";
+                setTimeout(() => (copyBtn.textContent = "content_copy"), 1000);
+            };
+
+            const showTypingAnimation = () => {
+                const html = `<div class="chat-content-temp chat-content">
+        <div class="chat-details">
+            <img src="https://i.ibb.co/8sP8sKn/code-quick-chat-icon.png" style="border-radius: 50%" alt="chatbot-img">
+            <div class="typing-animation">
+                <div class="typing-dot" style="--delay: 0.2s"></div>
+                <div class="typing-dot" style="--delay: 0.3s"></div>
+                <div class="typing-dot" style="--delay: 0.4s"></div>
+            </div>
+        </div>
+        <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
+    </div>`;
+                const incomingChatDiv = createChatElement(html, "incoming");
+                chatContainer.appendChild(incomingChatDiv);
+                chatContainer.scrollTo(0, chatContainer.scrollHeight);
+                getChatResponse(incomingChatDiv);
+            };
+
+            const handleOutgoingChat = () => {
+                userText = chatInput.value.trim();
+                if (!userText) return;
+
+                chatInput.value = "";
+                chatInput.style.height = "initial";
+
+                const html = `<div class="chat-content">
+        <div class="chat-details">
+            <img src="https://imgtr.ee/images/2024/02/03/c9d659425bd553231f69d556c7b1e51a.png" style="border-radius: 50%" alt="user-img">
+            <p>${userText}</p>
+        </div>
+    </div>`;
+
+                const outgoingChatDiv = createChatElement(html, "outgoing");
+                chatContainer.querySelector(".default-text")?.remove();
+                chatContainer.appendChild(outgoingChatDiv);
+                chatContainer.scrollTo(0, chatContainer.scrollHeight);
+                setTimeout(showTypingAnimation, 500);
+
+                // Update chat history with the user message
+                chatHistory.push({
+                    sender: "user",
+                    message: userText
+                });
+            };
+
+            deleteButton.addEventListener("click", () => {
+                chatContainer.innerHTML = '';
+                chatHistory = [];
+            });
+
+            themeButton.addEventListener("click", () => {
+                document.body.classList.toggle("light-mode");
+                themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
+            });
+
+            const initialInputHeight = chatInput.scrollHeight;
+
+            chatInput.addEventListener("input", () => {
+                chatInput.style.height = `${initialInputHeight}px`;
+                chatInput.style.height = `${chatInput.scrollHeight}px`;
+            });
+
+            chatInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
+                    e.preventDefault();
+                    handleOutgoingChat();
+                }
+            });
+
+            sendButton.addEventListener("click", handleOutgoingChat);
+
+        </script>
+</body>
+
+</html>
