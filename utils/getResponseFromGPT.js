@@ -1,19 +1,7 @@
 const vscode = require('vscode');
+const extractCodeFromResponse = require('./extractCodeFromResponse');
 
-const getResponseFromGPT = async (apiRequestBody) => {
-
-    // const extractCodeFromResponse = (response) => {
-
-    //     const codePattern = /```(?:[^\n]+)?\n([\s\S]+?)\n```/g;
-    //     let match;
-    //     let finalCode = "";
-    //     while ((match = codePattern.exec(response)) !== null) {
-    //         const extractedCode = match[1];
-    //         finalCode += extractedCode;
-    //     }
-
-    //     return finalCode;
-    // }
+const getResponseFromGPT = async (apiRequestBody, purpose) => {
 
     const configuration = vscode.workspace.getConfiguration('code-quick');
     const apiKey = configuration.get('apiKey');
@@ -33,7 +21,7 @@ const getResponseFromGPT = async (apiRequestBody) => {
     }).then(async (data) => {
 
         const response = data.choices[0].message.content;
-        console.log("Response",response);
+        console.log("Response", response);
         // const codeToWrite = await extractCodeFromResponse(response)
         const codeToWrite = response
         console.log("Code to Write -> ", codeToWrite)
