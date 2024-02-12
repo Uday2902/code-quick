@@ -45,9 +45,6 @@ class YourWebviewViewProvider {
 
 function activate(context) {
 
-	const test = require('dotenv').config()
-	console.log(test)
-
 	vscode.commands.executeCommand('setContext', 'myContext', `value`);
 
 	context.subscriptions.push(

@@ -18,7 +18,9 @@
   "keywords": [
     "ai",
     "codequick",
-    "codemaker"
+    "codemaker",
+    "generate code",
+    "fix errors"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -145,6 +147,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "dotenv": "^16.4.1",
     "fs": "^0.0.1-security",
     "path": "^0.12.7"
   }
