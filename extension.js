@@ -1,7 +1,9 @@
+require('dotenv').config({path: '/.env'})
 const vscode = require('vscode');
 const fs = require('fs')
 const path = require('path')
-const MY_OPENAI_API_KEY = "sk-xxxxxxx";
+
+const MY_OPENAI_API_KEY = "sk-xxxxx";
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -22,6 +24,16 @@ class YourWebviewViewProvider {
 	}
 
 	_getHtmlForWebview(webview) {
+
+		const panel = vscode.window.createWebviewPanel(
+			'Code Quick API Sharing',
+			'Code Quick',
+			vscode.ViewColumn.One,
+			{}
+		);
+		const apiKey_confg = vscode.workspace.getConfiguration().get('code-quick.apiKey');
+		panel.webview.postMessage({ type: 'apiKey', value: apiKey_confg });
+
 		const filePath = path.join(this._extensionUri.fsPath, './assets/chatbot.html');
 
 		// Read the file's contents and return as a string
@@ -32,6 +44,9 @@ class YourWebviewViewProvider {
 }
 
 function activate(context) {
+
+	const test = require('dotenv').config()
+	console.log(test)
 
 	vscode.commands.executeCommand('setContext', 'myContext', `value`);
 
@@ -52,6 +67,16 @@ function activate(context) {
 	}
 
 	let AskUserForAPIKey = vscode.commands.registerCommand('code-quick.AskUserForAPIKey', async function () {
+		// console.log("Starting")
+		// const telemetryService = (vscode.extensions.getExtension('code-quick'))?.exports;
+		// console.log("Telementary Service - ",telemetryService)
+		// if (telemetryService) {
+	    // 	const installationId = telemetryService.getExtensionInfo().installationId;
+    	// 	console.log('Installation ID:', installationId);
+		// } else {
+	    // 	console.error('Telemetry service not available.');
+		// }
+		// console.log("ended")
 		let configuration = vscode.workspace.getConfiguration('code-quick');
 		let userAPIKey = vscode.window.showInputBox({
 			prompt: "Enter your API key"
@@ -65,6 +90,7 @@ function activate(context) {
 
 	const ShowInformationMessageToAddAPIKey = vscode.commands.registerCommand('code-quick.ShowInformationMessageToAddAPIKey', async function () {
 		let timeout = 15000;
+		console.log("Showinf message");
 		Promise.race([
 			vscode.window.showInformationMessage('Code Quick prefers to use your own OpenAI API key. The default API key will include requests limits.', 'Add your API key', 'Continue with default API key'),
 			new Promise(resolve => setTimeout(() => resolve('Timeout'), timeout))
@@ -73,9 +99,11 @@ function activate(context) {
 				vscode.commands.executeCommand('code-quick.AskUserForAPIKey');
 			} else if (selection === 'Timeout') {
 				let configuration = vscode.workspace.getConfiguration('code-quick');
+				
 				configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global);
 			} else {
 				let configuration = vscode.workspace.getConfiguration('code-quick');
+				console.log("APi key - ",MY_OPENAI_API_KEY);
 				configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global);
 			}
 		});
@@ -192,12 +220,13 @@ function activate(context) {
 
 		vscode.window.showInformationMessage('Insert Code at Current Cursor Position!');
 		const userInput = await vscode.window.showInputBox();
+		const userCode = await vscode.window.activeTextEditor.document.getText();
 
 		if (userInput.trim() === "") {
 			return;
 		}
 
-		const getResponseFromGPT = async (userInput) => {
+		const getResponseFromGPT = async (userInput,userCode) => {
 
 			const extractCodeFromResponse = (response) => {
 
@@ -214,13 +243,14 @@ function activate(context) {
 
 			let apiMessages = {
 				role: "user",
-				content: `My prompt: "${userInput}"`
-			};
+				content: `Please ensure that your response only includes the specific part of the code snippet that I'm asking about because the code you will provide, i am directly gonna add it in my code so if you will provide extra code which is already in my code then it will gonna generate errors in my code so, do not include any additional or unnecessary parts of the code. Here's the specific part I'm asking about: ${userInput}`
+			};			
 
 			const systemMessage = {
 				role: "system",
-				content: "Generate the requested code. No additional text or dummy data should be included in the response. Only provide the code based on the user's prompt; no assumptions or extra information."
-			}
+				content: "User is making on code and want to add it's requested code in any specific line in his entire code so provide only necessary part of requested code so that inline code generation make sense"
+			};
+			
 
 			const apiRequestBody = {
 				"model": "gpt-3.5-turbo",
@@ -283,7 +313,7 @@ function activate(context) {
 			});
 
 			const startTime = Date.now();
-			await getResponseFromGPT(userInput);
+			await getResponseFromGPT(userInput,userCode);
 			const endTime = Date.now();
 			const elapsedTime = endTime - startTime;
 
@@ -460,7 +490,7 @@ function activate(context) {
 			});
 
 			const startTime = Date.now();
-			await getResponseFromGPT(userInput, userCode);
+			await getResponseFromGPT(userCode, userCode);
 			const endTime = Date.now();
 			const elapsedTime = endTime - startTime;
 
@@ -481,8 +511,6 @@ function activate(context) {
 	context.subscriptions.push(InsertAtCursor);
 	context.subscriptions.push(ShowInformationMessageToAddAPIKey);
 }
-
-
 
 // This method is called when your extension is deactivated
 function deactivate() { }

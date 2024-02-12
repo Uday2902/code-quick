@@ -55,11 +55,11 @@
     "commands": [
       {
         "command": "code-quick.TransformEntireFile",
-        "title": "Transform Entire File"
+        "title": "Entire File"
       },
       {
         "command": "code-quick.InsertAtCursor",
-        "title": "Insert at Cursor"
+        "title": "Inline"
       },
       {
         "command": "code-quick.AskUserForAPIKey",
@@ -83,10 +83,8 @@
       ],
       "code-quick.mainMenu": [
         {
-          "command": "code-quick.InsertAtCursor"
-        },
-        {
-          "command": "code-quick.TransformEntireFile"
+          "submenu": "code-quick.codeGenerationMenu",
+          "group": "navigation"
         },
         {
           "command": "code-quick.AskUserForAPIKey"
@@ -94,6 +92,16 @@
         {
           "submenu": "code-quick.fixMenu",
           "group": "navigation"
+        }
+      ],
+      "code-quick.codeGenerationMenu": [
+        {
+          "command": "code-quick.InsertAtCursor",
+          "group": "codeGenerationMenu"
+        },
+        {
+          "command": "code-quick.TransformEntireFile",
+          "group": "codeGenerationMenu"
         }
       ],
       "code-quick.fixMenu": [
@@ -115,6 +123,10 @@
       {
         "id": "code-quick.fixMenu",
         "label": "Fix Errors"
+      },
+      {
+        "id": "code-quick.codeGenerationMenu",
+        "label": "Generate Code"
       }
     ]
   },

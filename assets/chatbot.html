@@ -365,6 +365,15 @@
             </div>
         </div>
         <script>
+            console.log("Hello")
+            let apiKey = ""
+            window.addEventListener('message', event => {
+                const message = event.data;
+                if (message.type === 'apiKey') {
+                    apiKey = message.value;
+                }
+            });
+
             const chatInput = document.querySelector("#chat-input");
             const sendButton = document.querySelector("#send-btn");
             const chatContainer = document.querySelector(".chat-container");
@@ -416,7 +425,7 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": "Bearer sx-xxxxxxxx",
+                        "Authorization": `Bearer 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`,
                     },
                     body: JSON.stringify(apiRequestBody),
                 };
