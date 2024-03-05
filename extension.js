@@ -1,7 +1,8 @@
-require('dotenv').config({path: '/.env'})
+require('dotenv').config({ path: '/.env' })
 const vscode = require('vscode');
 const fs = require('fs')
 const path = require('path')
+const axios = require('axios')
 
 const MY_OPENAI_API_KEY = "sk-xxxxx";
 
@@ -68,10 +69,10 @@ function activate(context) {
 		// const telemetryService = (vscode.extensions.getExtension('code-quick'))?.exports;
 		// console.log("Telementary Service - ",telemetryService)
 		// if (telemetryService) {
-	    // 	const installationId = telemetryService.getExtensionInfo().installationId;
-    	// 	console.log('Installation ID:', installationId);
+		// 	const installationId = telemetryService.getExtensionInfo().installationId;
+		// 	console.log('Installation ID:', installationId);
 		// } else {
-	    // 	console.error('Telemetry service not available.');
+		// 	console.error('Telemetry service not available.');
 		// }
 		// console.log("ended")
 		let configuration = vscode.workspace.getConfiguration('code-quick');
@@ -96,11 +97,11 @@ function activate(context) {
 				vscode.commands.executeCommand('code-quick.AskUserForAPIKey');
 			} else if (selection === 'Timeout') {
 				let configuration = vscode.workspace.getConfiguration('code-quick');
-				
+
 				configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global);
 			} else {
 				let configuration = vscode.workspace.getConfiguration('code-quick');
-				console.log("APi key - ",MY_OPENAI_API_KEY);
+				console.log("APi key - ", MY_OPENAI_API_KEY);
 				configuration.update('apiKey', MY_OPENAI_API_KEY, vscode.ConfigurationTarget.Global);
 			}
 		});
@@ -223,7 +224,7 @@ function activate(context) {
 			return;
 		}
 
-		const getResponseFromGPT = async (userInput,userCode) => {
+		const getResponseFromGPT = async (userInput, userCode) => {
 
 			const extractCodeFromResponse = (response) => {
 
@@ -241,13 +242,13 @@ function activate(context) {
 			let apiMessages = {
 				role: "user",
 				content: `Please ensure that your response only includes the specific part of the code snippet that I'm asking about because the code you will provide, i am directly gonna add it in my code so if you will provide extra code which is already in my code then it will gonna generate errors in my code so, do not include any additional or unnecessary parts of the code. Here's the specific part I'm asking about: ${userInput}`
-			};			
+			};
 
 			const systemMessage = {
 				role: "system",
 				content: "User is making on code and want to add it's requested code in any specific line in his entire code so provide only necessary part of requested code so that inline code generation make sense"
 			};
-			
+
 
 			const apiRequestBody = {
 				"model": "gpt-3.5-turbo",
@@ -310,7 +311,7 @@ function activate(context) {
 			});
 
 			const startTime = Date.now();
-			await getResponseFromGPT(userInput,userCode);
+			await getResponseFromGPT(userInput, userCode);
 			const endTime = Date.now();
 			const elapsedTime = endTime - startTime;
 
@@ -503,8 +504,49 @@ function activate(context) {
 	});
 
 
+	let ShareCode = vscode.commands.registerCommand('code-quick.ShareCode', async function () {
+		vscode.window.showInformationMessage('Code Sharing...');
+		const editor = vscode.window.activeTextEditor;
+		const selection = editor.selection;
+		console.log("Selection -->> ", selection);
+		if (selection && !selection.isEmpty) {
+			const selectionRange = new vscode.Range(selection.start.line, selection.start.character, selection.end.line, selection.end.character);
+			const selectedText = editor.document.getText(selectionRange);
+			console.log(selectedText)
+			let channelName = await vscode.window.showInputBox({
+				prompt: "Enter unique channel name"
+			});
+			await axios.post("https://code-quick-backend.onrender.com/send", {text: selectedText.toString(), channel: channelName.toString()})
+				.then((response) => {console.log("Code Sent", response);vscode.window.showInformationMessage('Code Sent Successfully...')})
+				.catch(err => {console.log(err);vscode.window.showInformationMessage('Code sharing failed...');})
+		}
+	});
+
+
+	let ReceiveCode = vscode.commands.registerCommand('code-quick.ReceiveCode', async function () {
+		
+		let channelName = await vscode.window.showInputBox({
+			prompt: "Enter unique channel name"
+		});
+		await axios.post("https://code-quick-backend.onrender.com/receive",{channel: channelName.toString()})
+			.then((response) => {
+				console.log("Response ->>>",response.data.text)
+				let editor = vscode.window.activeTextEditor;
+				if (editor) {
+					let position = editor.selection.active;
+					editor.edit(editBuilder => {
+						editBuilder.insert(position, response.data.text);
+					});
+				}
+				vscode.window.showInformationMessage("Code received successfully...")
+			})
+			.catch(err => {console.log(err);vscode.window.showInformationMessage('Error while receiving code...');})
+	});
+
 	context.subscriptions.push(TransformEntireFile);
 	context.subscriptions.push(AskUserForAPIKey);
+	context.subscriptions.push(ReceiveCode);
+	context.subscriptions.push(ShareCode);
 	context.subscriptions.push(InsertAtCursor);
 	context.subscriptions.push(ShowInformationMessageToAddAPIKey);
 }

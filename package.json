@@ -74,6 +74,14 @@
       {
         "command": "code-quick.FixEntireCode",
         "title": "Entire code"
+      },
+      {
+        "command": "code-quick.ShareCode",
+        "title": "Send"
+      },
+      {
+        "command": "code-quick.ReceiveCode",
+        "title": "Receive"
       }
     ],
     "menus": {
@@ -90,6 +98,11 @@
         },
         {
           "command": "code-quick.AskUserForAPIKey"
+        },
+        {
+          "submenu": "code-quick.codeSharingMenu",
+          "group": "navigation"
+          
         },
         {
           "submenu": "code-quick.fixMenu",
@@ -115,6 +128,16 @@
           "command": "code-quick.FixEntireCode",
           "group": "fixMenu"
         }
+      ],
+      "code-quick.codeSharingMenu": [
+        {
+          "command": "code-quick.ShareCode",
+          "group": "codeSharingMenu"
+        },
+        {
+          "command": "code-quick.ReceiveCode",
+          "group": "codeSharingMenu"
+        }
       ]
     },
     "submenus": [
@@ -129,6 +152,10 @@
       {
         "id": "code-quick.codeGenerationMenu",
         "label": "Generate Code"
+      },
+      {
+        "id": "code-quick.codeSharingMenu",
+        "label": "Code Sharing"
       }
     ]
   },
@@ -147,6 +174,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "agora-chat": "^1.2.1",
+    "axios": "^1.6.7",
     "dotenv": "^16.4.1",
     "fs": "^0.0.1-security",
     "path": "^0.12.7"
