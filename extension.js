@@ -55,26 +55,15 @@ function activate(context) {
 		)
 	);
 
-	console.log('Congratulations, your extension "code-quick" is now active!');
-
 	let configuration = vscode.workspace.getConfiguration('code-quick');
 	let apiKey = configuration.get('apiKey');
 
-	if (apiKey === "") {
+	if (!apiKey) {
 		vscode.commands.executeCommand('code-quick.ShowInformationMessageToAddAPIKey');
 	}
 
 	let AskUserForAPIKey = vscode.commands.registerCommand('code-quick.AskUserForAPIKey', async function () {
-		// console.log("Starting")
-		// const telemetryService = (vscode.extensions.getExtension('code-quick'))?.exports;
-		// console.log("Telementary Service - ",telemetryService)
-		// if (telemetryService) {
-		// 	const installationId = telemetryService.getExtensionInfo().installationId;
-		// 	console.log('Installation ID:', installationId);
-		// } else {
-		// 	console.error('Telemetry service not available.');
-		// }
-		// console.log("ended")
+
 		let configuration = vscode.workspace.getConfiguration('code-quick');
 		let userAPIKey = vscode.window.showInputBox({
 			prompt: "Enter your API key"
@@ -88,7 +77,7 @@ function activate(context) {
 
 	const ShowInformationMessageToAddAPIKey = vscode.commands.registerCommand('code-quick.ShowInformationMessageToAddAPIKey', async function () {
 		let timeout = 15000;
-		console.log("Showinf message");
+		
 		Promise.race([
 			vscode.window.showInformationMessage('Code Quick prefers to use your own OpenAI API key. The default API key will include requests limits.', 'Add your API key', 'Continue with default API key'),
 			new Promise(resolve => setTimeout(() => resolve('Timeout'), timeout))
