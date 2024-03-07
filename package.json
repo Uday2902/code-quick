@@ -3,7 +3,6 @@
   "displayName": "Code Quick",
   "description": "Generate code straight to your space!",
   "publisher": "uday2902",
-  "icon": "assets/logo-black.png",
   "version": "1.0.2",
   "engines": {
     "vscode": "^1.85.0"
@@ -174,7 +173,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "agora-chat": "^1.2.1",
     "axios": "^1.6.7",
     "dotenv": "^16.4.1",
     "fs": "^0.0.1-security",
