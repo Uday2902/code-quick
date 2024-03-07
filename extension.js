@@ -1,63 +1,61 @@
 require('dotenv').config({ path: '/.env' })
 const vscode = require('vscode');
-const fs = require('fs')
-const path = require('path')
+// const fs = require('fs')
+// const path = require('path')
 const axios = require('axios')
-
-const MY_OPENAI_API_KEY = "sk-xxxxx";
-
+const MY_OPENAI_API_KEY = "xxxxxxxxx"
 /**
  * @param {vscode.ExtensionContext} context
  */
 
-class YourWebviewViewProvider {
-	constructor(extensionUri) {
-		this._extensionUri = extensionUri;
-	}
+// class YourWebviewViewProvider {
+// 	constructor(extensionUri) {
+// 		this._extensionUri = extensionUri;
+// 	}
 
-	resolveWebviewView(webviewView) {
-		webviewView.webview.options = {
-			enableScripts: true,
-			localResourceRoots: [this._extensionUri]
-		};
+// 	resolveWebviewView(webviewView) {
+// 		webviewView.webview.options = {
+// 			enableScripts: true,
+// 			localResourceRoots: [this._extensionUri]
+// 		};
 
-		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-	}
+// 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+// 	}
 
-	_getHtmlForWebview(webview) {
+// 	_getHtmlForWebview(webview) {
 
-		const panel = vscode.window.createWebviewPanel(
-			'Code Quick API Sharing',
-			'Code Quick',
-			vscode.ViewColumn.One,
-			{}
-		);
-		const apiKey_confg = vscode.workspace.getConfiguration().get('code-quick.apiKey');
-		panel.webview.postMessage({ type: 'apiKey', value: apiKey_confg });
+// 		const panel = vscode.window.createWebviewPanel(
+// 			'Code Quick API Sharing',
+// 			'Code Quick',
+// 			vscode.ViewColumn.One,
+// 			{}
+// 		);
+// 		const apiKey_confg = vscode.workspace.getConfiguration().get('code-quick.apiKey');
+// 		panel.webview.postMessage({ type: 'apiKey', value: apiKey_confg });
 
-		const filePath = path.join(this._extensionUri.fsPath, './assets/chatbot.html');
+// 		const filePath = path.join(this._extensionUri.fsPath, './assets/chatbot.html');
 
-		// Read the file's contents and return as a string
-		const html = fs.readFileSync(filePath, 'utf8');
+// 		// Read the file's contents and return as a string
+// 		const html = fs.readFileSync(filePath, 'utf8');
 
-		return html;
-	}
-}
+// 		return html;
+// 	}
+// }
 
 function activate(context) {
 
 	vscode.commands.executeCommand('setContext', 'myContext', `value`);
 
-	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(
-			'codequick',
-			new YourWebviewViewProvider(context.extensionUri)
-		)
-	);
-
+	// context.subscriptions.push(
+	// 	vscode.window.registerWebviewViewProvider(
+	// 		'codequick',
+	// 		new YourWebviewViewProvider(context.extensionUri)
+	// 	)
+	// );
+	// console.log("Uday")
 	let configuration = vscode.workspace.getConfiguration('code-quick');
 	let apiKey = configuration.get('apiKey');
-
+	// console.log("aspikeuy -> ",apiKey)
 	if (!apiKey) {
 		vscode.commands.executeCommand('code-quick.ShowInformationMessageToAddAPIKey');
 	}
