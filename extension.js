@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '/.env' })
+// require('dotenv').config({ path: '/.env' })
 const vscode = require('vscode');
 // const fs = require('fs')
 // const path = require('path')
@@ -44,7 +44,7 @@ const MY_OPENAI_API_KEY = "xxxxxxxxx"
 
 function activate(context) {
 
-	vscode.commands.executeCommand('setContext', 'myContext', `value`);
+	// vscode.commands.executeCommand('setContext', 'myContext', `value`);
 
 	// context.subscriptions.push(
 	// 	vscode.window.registerWebviewViewProvider(
@@ -56,7 +56,7 @@ function activate(context) {
 	let configuration = vscode.workspace.getConfiguration('code-quick');
 	let apiKey = configuration.get('apiKey');
 	// console.log("aspikeuy -> ",apiKey)
-	if (!apiKey) {
+	if (apiKey===undefined || apiKey === "") {
 		vscode.commands.executeCommand('code-quick.ShowInformationMessageToAddAPIKey');
 	}
 
