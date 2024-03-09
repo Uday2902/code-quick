@@ -10,7 +10,13 @@
   },
   "permissions": [
     "http://*/",
-    "https://*/"
+    "https://*/",
+    "activeEditor",
+    "activeEditor.document",
+    "workspace",
+    "window",
+    "clipboardWrite",
+    "configuration"
   ],
   "categories": [
     "Snippets",
