@@ -1,3 +1,4 @@
+
 const extractCodeFromResponse = (response) => {
 
     const codePattern = /```(?:[^\n]+)?\n([\s\S]+?)\n```/g;
@@ -12,5 +13,7 @@ const extractCodeFromResponse = (response) => {
 }
 
 module.exports = {
+
     extractCodeFromResponse
+
 }
