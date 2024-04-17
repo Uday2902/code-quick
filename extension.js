@@ -1,5 +1,6 @@
 const vscode = require('vscode');
-const {codeCompletion} = require('./utils/codeCompletion');
+const {codeSuggestion} = require('./utils/codeSuggestion');
+const {setCodeSuggestionFlag} = require('./utils/setCodeSuggestionFlag');
 const { shareCode, receiveCode, showInformationMessageToAddAPIKey, transformEntireFile, insertAtCursor, fixSelectedCode, fixEntireCode, askUserForAPIKey } = require('./utils/index')
 
 /**
@@ -61,61 +62,23 @@ function activate(context) {
         )
     );
 
-    // let timeout = null;
-    // let canSuggest = false;
-    
-    // vscode.workspace.onDidChangeTextDocument(event => {
-    //     if (timeout !== null) {
-    //         clearTimeout(timeout);
-    //     }
-    
-    //     timeout = setTimeout(() => {
-    //         console.log('User stopped typing');
-    //         canSuggest = true;
-    //         vscode.commands.executeCommand('editor.action.inlineSuggest.trigger');
-    //         timeout = null;
-    //     }, 5000);
-    // });
-    
-    // const providerDisposable = vscode.languages.registerInlineCompletionItemProvider(
-    //     '*',
-    //     {
-    //         async provideInlineCompletionItems(document, position, context, token) {
-    //             if (!canSuggest) {
-    //                 return [];
-    //             }
-    
-    //             console.log("Here1")
-    //             const editor = vscode.window.activeTextEditor;
-    //             if (!editor) {
-    //                 return [];
-    //             }
-    
-    //             // const suggestionText = "Hello World";
-    //             const suggestionText = await responseFromGpt();
-    
-    //             const cursorPosition = editor.selection.active;
-    
-    //             const range = new vscode.Range(cursorPosition, cursorPosition);
-    
-    //             const inlineSuggestion = new vscode.InlineCompletionItem(suggestionText, range);
-    
-    //             canSuggest = false; // Reset the flag
-    //             return [inlineSuggestion]
-    //         }
-    //     }
-    // );
+    let statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    statusBar.text = "</>";
+    statusBar.tooltip = "Code Quick : Code Suggestion"
+    statusBar.command = 'code-quick.SetCodeSuggestionFlag';
+    statusBar.show();
 
-    
     let configuration = vscode.workspace.getConfiguration('code-quick');
     let apiKey = configuration.get('apiKey');
     
     if (apiKey === undefined || apiKey === "") {
         vscode.commands.executeCommand('code-quick.ShowInformationMessageToAddAPIKey');
     }
-
-    let CodeCompletion = codeCompletion();
     
+    let CodeSuggestion = codeSuggestion();
+    
+    let SetCodeSuggestionFlag = vscode.commands.registerCommand('code-quick.SetCodeSuggestionFlag', setCodeSuggestionFlag);
+
     let AskUserForAPIKey = vscode.commands.registerCommand('code-quick.AskUserForAPIKey', askUserForAPIKey);
 
     let ShowInformationMessageToAddAPIKey = vscode.commands.registerCommand('code-quick.ShowInformationMessageToAddAPIKey', showInformationMessageToAddAPIKey);
@@ -132,7 +95,7 @@ function activate(context) {
 
     let ReceiveCode = vscode.commands.registerCommand('code-quick.ReceiveCode', receiveCode);
 
-    context.subscriptions.push(...[TransformEntireFile, AskUserForAPIKey, ReceiveCode, ShareCode, InsertAtCursor, ShowInformationMessageToAddAPIKey, FixEntireCode, FixSelectedCode, CodeCompletion]);
+    context.subscriptions.push(...[TransformEntireFile, AskUserForAPIKey, ReceiveCode, ShareCode, InsertAtCursor, ShowInformationMessageToAddAPIKey, FixEntireCode, FixSelectedCode, CodeSuggestion, SetCodeSuggestionFlag]);
 
 }
 

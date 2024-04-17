@@ -58,6 +58,8 @@ async function responseFromGpt(selectedText, userInput, purpose, userCode){
             apiMessages
         ]
     }
+
+    console.log('API Call');
     
     await fetch('https://api.openai.com/v1/chat/completions', {
         method: "POST",

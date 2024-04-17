@@ -61,6 +61,11 @@
           "type": "string",
           "default": "",
           "description": "OpenAI API Key for Code Quick Extension"
+        },
+        "code-quick.codeSuggestionFlag": {
+          "type": "boolean",
+          "default": false,
+          "description": "Code Suggestion (It uses API calls)"
         }
       }
     },
@@ -92,6 +97,10 @@
       {
         "command": "code-quick.ReceiveCode",
         "title": "Receive"
+      },
+      {
+        "command": "code-quick.SetCodeCompletionFlag",
+        "title": "Code Completion"
       }
     ],
     "menus": {
