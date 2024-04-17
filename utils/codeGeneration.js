@@ -3,7 +3,7 @@ const { extractCodeFromResponse} = require('./extractCodeFromResponse')
 const {responseFromGpt} = require('./responseFromGpt');
 
 const transformEntireFile = async () => {
-    console.log("Here1")
+    
     vscode.window.showInformationMessage('Transform Entire File!');
 
     const userCode = await vscode.window.activeTextEditor.document.getText();
@@ -26,9 +26,8 @@ const transformEntireFile = async () => {
         });
 
         const startTime = Date.now();
-        console.log("Here2")
+        
         const response = await responseFromGpt("", userInput, "insert-code-entire-file", userCode);
-        console.log("Here3", response);
 
         let editor = vscode.window.activeTextEditor;
 

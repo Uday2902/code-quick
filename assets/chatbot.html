@@ -172,6 +172,22 @@
             margin-left: 0;
         }
 
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 70vh; /* Adjust height as needed */
+            color: var(--text-color);
+        }
+
+        /* Adjustments for Textarea Height Stability */
+        .typing-textarea textarea {
+            height: 55px; /* Initial height */
+            min-height: 55px; /* Ensure minimum height */
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
         @keyframes animateDots {
 
             0%,
@@ -344,11 +360,17 @@
             span.material-symbols-rounded {
                 font-size: 1.25rem !important;
             }
+            
         }
     </style>
 </head>
 
 <body>
+
+    <div class="title">
+        <h1>Code Quick</h1>
+    </div>
+
     <!-- Chats container -->
     <div class="chat-container"></div>
 
@@ -425,7 +447,7 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer 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`,
+                        "Authorization": `Bearer xxxxxxxx`,
                     },
                     body: JSON.stringify(apiRequestBody),
                 };
@@ -452,6 +474,7 @@
             <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
         </div>`;
                     const incomingChatDiv = createChatElement(html, "incoming");
+                    
                     chatContainer.appendChild(incomingChatDiv);
                     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 
@@ -511,6 +534,7 @@
             };
 
             const handleOutgoingChat = () => {
+                document.getElementsByClassName('title')[0].style.display = 'none';
                 userText = chatInput.value.trim();
                 if (!userText) return;
 
@@ -519,7 +543,7 @@
 
                 const html = `<div class="chat-content">
         <div class="chat-details">
-            <img src="https://imgtr.ee/images/2024/02/03/c9d659425bd553231f69d556c7b1e51a.png" style="border-radius: 50%" alt="user-img">
+            <img src="https://i.ibb.co/r74jyht/user-icon.png" style="border-radius: 50%" alt="user-img">
             <p>${userText}</p>
         </div>
     </div>`;
