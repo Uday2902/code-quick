@@ -53,7 +53,7 @@ class YourWebviewViewProvider {
 
 function activate(context) {
 
-    // vscode.commands.executeCommand('setContext', 'myContext', `value`);
+    vscode.commands.executeCommand('setContext', 'myContext', `value`);
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
@@ -74,6 +74,7 @@ function activate(context) {
     if (apiKey === undefined || apiKey === "") {
         vscode.commands.executeCommand('code-quick.ShowInformationMessageToAddAPIKey');
     }
+    
     
     let CodeSuggestion = codeSuggestion();
     

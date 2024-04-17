@@ -59,7 +59,7 @@ async function responseFromGpt(selectedText, userInput, purpose, userCode){
         ]
     }
 
-    console.log('API Call');
+    console.log('Making API call');
     
     await fetch('https://api.openai.com/v1/chat/completions', {
         method: "POST",
@@ -76,7 +76,10 @@ async function responseFromGpt(selectedText, userInput, purpose, userCode){
         finalResponse = response.choices[0].message.content;
         console.log(finalResponse);
     })
-    
+    .catch((err) => {
+        console.log("Error during API call", err);
+        vscode.window.showErrorMessage('An error occurred during the API call. This may be due to an invalid or expired API key, or a loss of network connection');
+    })
     return finalResponse;
 
 }
