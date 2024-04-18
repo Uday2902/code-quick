@@ -50,7 +50,7 @@ async function responseFromGpt(selectedText, userInput, purpose, userCode){
         systemMessage["content"] = " Analyze any existing code and produce the next code. In response only give next code don't give back existing code because i am making auto code completion project so i require only and only next part of code not existing code so in response only and only give next code. Also response should contain only the next code, without any additional text or dummy data.";
 
     }
-
+    
     const apiRequestBody = {
         "model": "gpt-3.5-turbo",
         "messages": [

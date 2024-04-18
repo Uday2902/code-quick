@@ -4,7 +4,7 @@
   "description": "Generate code straight to your space!",
   "publisher": "uday2902",
   "icon": "assets/logo-black.png",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -184,16 +184,7 @@
   "scripts": {
     "lint": "eslint .", 
     "pretest": "npm run lint", 
-    "test": "vscode-test", 
-    "build": "webpack --mode production",
-    "watch": "webpack --mode development --watch",
-    "clean": "rm -rf out dist && mkdir out dist",
-    "compile": "tsc -p .",
-    "prepare": "npm run compile && npm run build",
-    "start": "vsce publish",
-    "dev": "npm run clean && npm run watch",
-    "lint:fix": "eslint . --fix",
-    "test:watch": "vscode-test --watch"
+    "test": "vscode-test"
   },  
   "dependencies": {
     "axios": "^1.6.7"

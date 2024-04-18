@@ -7,60 +7,88 @@ const { shareCode, receiveCode, showInformationMessageToAddAPIKey, transformEnti
  * @param {vscode.ExtensionContext} context
  */
 
-class YourWebviewViewProvider {
+// class YourWebviewViewProvider {
 
-    constructor(extensionUri) {
-        this._extensionUri = extensionUri;
-    }
+//     constructor(extensionUri) {
+//         this._extensionUri = extensionUri;
+//     }
 
-    async resolveWebviewView(webviewView) {
+//     async resolveWebviewView(webviewView) {
 
-        webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [this._extensionUri]
-        };
+//         webviewView.webview.options = {
+//             enableScripts: true,
+//             localResourceRoots: [this._extensionUri]
+//         };
 
-        await this._openHtmlFileInNewTab(webviewView.webview);
-    }
+//         await this._openHtmlFileInNewTab(webviewView.webview);
+//     }
 
-    async _openHtmlFileInNewTab(webview) {
+//     async _openHtmlFileInNewTab(webview) {
 
-        const extensionUri = this._extensionUri;
-        const fileUri = vscode.Uri.joinPath(extensionUri, 'assets', 'chatbot.html');
-        const fileContent = await vscode.workspace.fs.readFile(fileUri);
+//         const extensionUri = this._extensionUri;
+//         const fileUri = vscode.Uri.joinPath(extensionUri, 'assets', 'chatbot.html');
+//         const fileContent = await vscode.workspace.fs.readFile(fileUri);
 
-        let configuration = vscode.workspace.getConfiguration('code-quick');
-        let apiKey = configuration.get('apiKey');
+//         let configuration = vscode.workspace.getConfiguration('code-quick');
+//         let apiKey = configuration.get('apiKey');
 
-        const htmlContentWithApiKey = this._injectApiKeyIntoHtml(fileContent.toString(), apiKey);
+//         const htmlContentWithApiKey = this._injectApiKeyIntoHtml(fileContent.toString(), apiKey);
 
-        webview.html = htmlContentWithApiKey;
-    }
+//         webview.html = htmlContentWithApiKey;
+//     }
 
-    _injectApiKeyIntoHtml(htmlContent, apiKey) {
+//     _injectApiKeyIntoHtml(htmlContent, apiKey) {
 
-        const placeholder = 'Bearer xxxxxxxx';
-        const index = htmlContent.indexOf(placeholder);
+//         const placeholder = 'Bearer xxxxxxxx';
+//         const index = htmlContent.indexOf(placeholder);
 
-        if (index !== -1) {
-            const apiKeyScript = `Bearer ${apiKey}`;
-            return htmlContent.slice(0, index) + apiKeyScript + htmlContent.slice(index + placeholder.length);
-        } else {
-            return htmlContent + `<script>const apiKey = '${apiKey}';</script>`;
-        }
-    }
-}
+//         if (index !== -1) {
+//             const apiKeyScript = `Bearer ${apiKey}`;
+//             return htmlContent.slice(0, index) + apiKeyScript + htmlContent.slice(index + placeholder.length);
+//         } else {
+//             return htmlContent + `<script>const apiKey = '${apiKey}';</script>`;
+//         }
+//     }
+// }
 
 function activate(context) {
 
-    vscode.commands.executeCommand('setContext', 'myContext', `value`);
+    // vscode.commands.executeCommand('setContext', 'myContext', `value`);
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
             'codequick',
-            new YourWebviewViewProvider(context.extensionUri)
+            {
+                resolveWebviewView: async (webviewView) => {
+                    const extensionUri = context.extensionUri;
+                    const fileUri = vscode.Uri.joinPath(extensionUri, 'assets', 'chatbot.html');
+                    const fileContent = await vscode.workspace.fs.readFile(fileUri);
+
+                    const configuration = vscode.workspace.getConfiguration('code-quick');
+                    const apiKey = configuration.get('apiKey');
+
+                    const placeholder = 'Bearer xxxxxxxx';
+                    const index = fileContent.indexOf(placeholder);
+                    let htmlContent = fileContent.toString();
+
+                    if (index !== -1) {
+                        const apiKeyScript = `Bearer ${apiKey}`;
+                        htmlContent = htmlContent.slice(0, index) + apiKeyScript + htmlContent.slice(index + placeholder.length);
+                    } else {
+                        htmlContent += `<script>const apiKey = '${apiKey}';</script>`;
+                    }
+
+                    webviewView.webview.options = {
+                        enableScripts: true,
+                        localResourceRoots: [extensionUri]
+                    };
+
+                    webviewView.webview.html = htmlContent;
+                }
+            }
         )
     );
+
 
     let statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBar.text = "</>";
@@ -96,7 +124,18 @@ function activate(context) {
 
     let ReceiveCode = vscode.commands.registerCommand('code-quick.ReceiveCode', receiveCode);
 
-    context.subscriptions.push(...[TransformEntireFile, AskUserForAPIKey, ReceiveCode, ShareCode, InsertAtCursor, ShowInformationMessageToAddAPIKey, FixEntireCode, FixSelectedCode, CodeSuggestion, SetCodeSuggestionFlag]);
+    // context.subscriptions.push(...[TransformEntireFile, AskUserForAPIKey, ReceiveCode, ShareCode, InsertAtCursor, ShowInformationMessageToAddAPIKey, FixEntireCode, FixSelectedCode, CodeSuggestion, SetCodeSuggestionFlag]);
+    context.subscriptions.push(TransformEntireFile);
+    context.subscriptions.push(AskUserForAPIKey);
+    context.subscriptions.push(ReceiveCode);
+    context.subscriptions.push(ShareCode);
+    context.subscriptions.push(InsertAtCursor);
+    context.subscriptions.push(ShowInformationMessageToAddAPIKey);
+    context.subscriptions.push(FixEntireCode);
+    context.subscriptions.push(FixSelectedCode);
+    // context.subscriptions.push(CodeSuggestion);
+    context.subscriptions.push(SetCodeSuggestionFlag);
+
 
 }
 
