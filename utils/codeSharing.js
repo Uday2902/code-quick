@@ -1,5 +1,4 @@
 const vscode = require('vscode');
-const axios = require('axios');
 
 const shareCode = async () => {
 
@@ -19,9 +18,28 @@ const shareCode = async () => {
 
         // https://code-quick-backend.onrender.com/send
 
-        await axios.post("https://different-fish-onesies.cyclic.app/send", { text: selectedText.toString(), channel: channelName.toString() })
-            .then(response => vscode.window.showInformationMessage('Code Sent Successfully...'))
-            .catch(err => vscode.window.showInformationMessage('Code sharing failed...'))
+        await fetch("https://different-fish-onesies.cyclic.app/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text: selectedText.toString(), channel: channelName.toString() })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Code sharing failed...');
+                }
+            })
+            .then(data => {
+                // Handle successful response
+                vscode.window.showInformationMessage('Code Sent Successfully...');
+            })
+            .catch(error => {
+                vscode.window.showInformationMessage("Code sharing failed");
+            });
+
 
     }
 
@@ -35,26 +53,39 @@ const receiveCode = async () => {
 
     // https://code-quick-backend.onrender.com/receive
 
-    await axios.post("https://different-fish-onesies.cyclic.app/receive", { channel: channelName.toString() })
-        .then((response) => {
-            
+    await fetch("https://different-fish-onesies.cyclic.app/receive", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ channel: channelName.toString() })
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error while receiving code...');
+            }
+        })
+        .then(data => {
             let editor = vscode.window.activeTextEditor;
-
             if (editor) {
                 let position = editor.selection.active;
                 editor.edit(editBuilder => {
-                    editBuilder.insert(position, response.data.text);
+                    editBuilder.insert(position, data.text);
                 });
             }
-
-            vscode.window.showInformationMessage("Code received successfully...")
+            vscode.window.showInformationMessage("Code received successfully...");
         })
-        .catch(err => vscode.window.showInformationMessage('Error while receiving code...'))
+        .catch(error => {
+            vscode.window.showInformationMessage(error.message);
+        });
+
 }
 
 module.exports = {
 
     shareCode,
     receiveCode
-    
+
 }
