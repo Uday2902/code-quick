@@ -47,7 +47,6 @@ function activate(context) {
         )
     );
 
-
     let statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBar.text = "</>";
     statusBar.tooltip = "Code Quick : Code Suggestion"

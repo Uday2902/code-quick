@@ -16,9 +16,9 @@ const shareCode = async () => {
             prompt: "Enter unique channel name"
         });
 
-        // https://code-quick-backend.onrender.com/send
-
-        await fetch("https://different-fish-onesies.cyclic.app/send", {
+        // https://different-fish-onesies.cyclic.app/send
+        
+        await fetch("https://code-quick-backend.onrender.com/send", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -39,7 +39,7 @@ const shareCode = async () => {
             .catch(error => {
                 vscode.window.showInformationMessage("Code sharing failed");
             });
-
+            
 
     }
 
@@ -51,9 +51,9 @@ const receiveCode = async () => {
         prompt: "Enter unique channel name"
     });
 
-    // https://code-quick-backend.onrender.com/receive
+    // https://different-fish-onesies.cyclic.app/receive
 
-    await fetch("https://different-fish-onesies.cyclic.app/receive", {
+    await fetch("https://code-quick-backend.onrender.com/receive", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
