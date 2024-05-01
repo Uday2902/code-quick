@@ -26,7 +26,7 @@ const shareCode = async () => {
             body: JSON.stringify({ text: selectedText.toString(), channel: channelName.toString() })
         })
             .then(response => {
-                if (response.ok) {
+                if (response.status === 200) {
                     return response.json();
                 } else {
                     throw new Error('Code sharing failed...');
@@ -46,11 +46,11 @@ const shareCode = async () => {
 }
 
 const receiveCode = async () => {
-
+    
     let channelName = await vscode.window.showInputBox({
         prompt: "Enter unique channel name"
     });
-
+    
     // https://different-fish-onesies.cyclic.app/receive
 
     await fetch("https://code-quick-backend.onrender.com/receive", {
@@ -61,7 +61,7 @@ const receiveCode = async () => {
         body: JSON.stringify({ channel: channelName.toString() })
     })
         .then(response => {
-            if (response.ok) {
+            if (response.status === 200) {
                 return response.json();
             } else {
                 throw new Error('Error while receiving code...');
